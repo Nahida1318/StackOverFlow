@@ -13,13 +13,13 @@ app.use(express.json())
 //connectDB
 connectDB();
 
-app.use('/',authRoute);
-app.use('/',postRoute);
-app.use('/',notificationRoute);
+// app.use('/',authRoute);
+// app.use('/',postRoute);
+// app.use('/',notificationRoute);
 
-// app.use('/auth', authRoute);
-// app.use('/posts', postRoute);
-// app.use('/notifications', notificationRoute);
+app.use('/auth', authRoute);
+app.use('/posts', postRoute);
+app.use('/notifications', notificationRoute);
 
 
 

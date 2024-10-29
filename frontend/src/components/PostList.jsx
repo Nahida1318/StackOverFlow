@@ -14,7 +14,7 @@ function PostList({ token }) {
   }, [token]);
 
   const fetchPosts = async () => {
-    const res = await fetch(`http://localhost:8000/post`, {
+    const res = await fetch(`http://localhost:8000/posts/post`, {
       headers: { Authorization: `Bearer ${token}` },
     });
     const data = await res.json();
@@ -23,7 +23,7 @@ function PostList({ token }) {
   };
 
   const fetchUserPosts = async () => {
-    const res = await fetch(`http://localhost:8000/mypost`, {
+    const res = await fetch(`http://localhost:8000/posts/mypost`, {
       headers: { Authorization: `Bearer ${token}` },
     });
     const data = await res.json();
@@ -54,7 +54,7 @@ function PostList({ token }) {
       formData.append("codeSnippet", file);
     }
 
-    const res = await fetch(`http://localhost:8000/post`, {
+    const res = await fetch(`http://localhost:8000/posts/post`, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${token}`,

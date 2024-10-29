@@ -9,7 +9,7 @@ function Auth({ setToken }) {
 
   const handleSignUp = async () => {
  
-    const res = await fetch(`http://localhost:8000/signUp`, {
+    const res = await fetch(`http://localhost:8000/auth/signUp`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, password }),
@@ -26,7 +26,7 @@ function Auth({ setToken }) {
 
   const handleSignIn = async () => {
    
-    const res = await fetch(`http://localhost:8000/signIn`, {
+    const res = await fetch(`http://localhost:8000/auth/signIn`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, password }),
