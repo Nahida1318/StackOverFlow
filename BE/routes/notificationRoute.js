@@ -4,7 +4,7 @@ const Notification=require('../models/Notification')
 const authmiddleware=require('../middleware/authMiddleware')
 
 
-router.get('/notification', authmiddleware, async (req, res) => {
+router.get('/', authmiddleware, async (req, res) => {
   try {
     const notifications = await Notification.find({
       email: { $ne: req.user.email }, // Get notifications for other users' posts
@@ -18,7 +18,7 @@ router.get('/notification', authmiddleware, async (req, res) => {
 
 
 // Mark notification as viewed
-router.put('/notification/:id/view', authmiddleware, async (req, res) => {
+router.put('/:id/view', authmiddleware, async (req, res) => {
   try {
     const notification = await Notification.findById(req.params.id);
     if (!notification) {

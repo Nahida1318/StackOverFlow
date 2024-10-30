@@ -18,8 +18,6 @@ function App() {
   };
 
 
-
-
   return (
     <div className="min-h-screen bg-gradient-to-r from-purple-300 via-pink-350 to-red-400 flex items-center justify-center">
       <BrowserRouter>
@@ -52,7 +50,7 @@ function App() {
             </header>
             <Routes>
               <Route path="/" element={<PostList token={token} />} />
-              <Route path="/post/:postId" element={<SinglePost token={token} />} />
+              <Route path="/posts/:postId" element={<SinglePost token={token} />} />
               <Route path="/notifications" element={<NotificationList token={token} />} />
             </Routes>
           </div>

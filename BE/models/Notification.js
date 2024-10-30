@@ -7,6 +7,9 @@ const notificationSchema = new mongoose.Schema({
   
   seenBy:[{type:String}],
   totalRecipients: { type: Number, required: true },
+  
+},{
+  timestamps: true  // Automatically create createdAt and updatedAt fields
 });
 
 module.exports = mongoose.model('Notification', notificationSchema);

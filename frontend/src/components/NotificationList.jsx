@@ -12,7 +12,7 @@ function NotificationList({ token }) {
   }, [token]);
 
   const fetchNotifications = async () => {
-    const res = await fetch(`http://localhost:8000/notifications/notification`, {
+    const res = await fetch(`http://localhost:8000/notifications`, {
       headers: { Authorization: `Bearer ${token}` },
     });
     const data = await res.json();
@@ -20,7 +20,7 @@ function NotificationList({ token }) {
   };
 
   const markAsViewed = async (id) => {
-    await fetch(`http://localhost:8000/notifications/notification/${id}/view`, {
+    await fetch(`http://localhost:8000/notifications/${id}/view`, {
       method: 'PUT',
       headers: { Authorization: `Bearer ${token}` },
     });
@@ -32,7 +32,7 @@ function NotificationList({ token }) {
   
   const viewPost=(pid,nid)=>{
     markAsViewed(nid);
-       navigate(`/post/${pid}`)
+       navigate(`/posts/${pid}`)
   }
 
   return (

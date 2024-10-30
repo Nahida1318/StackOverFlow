@@ -9,12 +9,14 @@ function PostList({ token }) {
   const [fileExtension, setFileExtension] = useState("txt");
   const [showingUserPosts, setShowingUserPosts] = useState(false); // State to toggle view
   const [codeSnippets, setCodeSnippets] = useState({});
+  const [showForm, setShowForm] = useState(false); // New state to show/hide form
+
   useEffect(() => {
     fetchPosts(); // Initially fetch posts by others
   }, [token]);
 
   const fetchPosts = async () => {
-    const res = await fetch(`http://localhost:8000/posts/post`, {
+    const res = await fetch(`http://localhost:8000/posts`, {
       headers: { Authorization: `Bearer ${token}` },
     });
     const data = await res.json();
@@ -33,14 +35,23 @@ function PostList({ token }) {
 
   const fetchCodeSnippet = async (url, postId) => {
     try {
-      const res = await fetch(url);
-      const content = await res.text();
-      setCodeSnippets((prev) => ({ ...prev, [postId]: content })); // Store the content in state
+      if (codeSnippets[postId]) {
+        // Toggle off the display if code snippet is already loaded
+        setCodeSnippets((prev) => {
+          const updatedSnippets = { ...prev };
+          delete updatedSnippets[postId];
+          return updatedSnippets;
+        });
+      } else {
+        // Fetch and display the code snippet
+        const res = await fetch(url);
+        const content = await res.text();
+        setCodeSnippets((prev) => ({ ...prev, [postId]: content })); // Store the content in state
+      }
     } catch (error) {
       console.error("Error fetching code snippet:", error);
     }
   };
-
 
   const handleCreatePost = async () => {
     const formData = new FormData();
@@ -54,7 +65,7 @@ function PostList({ token }) {
       formData.append("codeSnippet", file);
     }
 
-    const res = await fetch(`http://localhost:8000/posts/post`, {
+    const res = await fetch(`http://localhost:8000/posts`, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${token}`,
@@ -68,6 +79,7 @@ function PostList({ token }) {
       setFile(null);
       alert("Post created successfully");
       fetchPosts(); // Refresh posts after creating a new post
+      setShowForm(false); // Hide form after submission
     } else {
       alert("Error creating post");
     }
@@ -76,55 +88,61 @@ function PostList({ token }) {
   return (
     <div>
       <div className="flex justify-between m-4">
-        <h4 className="text-xl font-bold mb-4"><pre>                                          Create a Post</pre></h4>
+        <button
+          onClick={() => setShowForm((prev) => !prev)} // Toggle form visibility
+          className="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded mb-4"
+        >
+          {showForm ? "Cancel" : "Create Post"}
+        </button>
         <button
           onClick={showingUserPosts ? fetchPosts : fetchUserPosts} // Toggle between fetching user posts and others' posts
           className="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded mb-4"
         >
           {showingUserPosts ? "View Posts by Others" : "View My Posts"}{" "}
-          {/* Dynamic button label */}
         </button>
       </div>
-      <h4>Title:</h4>
-      <input
-        type="text"
-        value={title}
-        onChange={(e) => setTitle(e.target.value)}
-        placeholder="Enter title here"
-        className="block w-full p-2 mb-2 border rounded"
-      />
-      <h4>Content:</h4>
-      <textarea
-        value={content}
-        onChange={(e) => setContent(e.target.value)}
-        placeholder="Enter content here"
-        className="block w-full p-2 mb-2 border rounded"
-      />
-      <h4>File Type :</h4>
-      <select
-        value={fileExtension}
-        onChange={(e) => setFileExtension(e.target.value)}
-        className="block w-full p-2 mb-2 border rounded"
-      >
-        <option value="c">C</option>
-        <option value="cpp">C++</option>
-        <option value="java">Java</option>
-        <option value="py">Python</option>
-      </select>
-      <input
-        type="file"
-        onChange={(e) => setFile(e.target.files[0])}
-        className="block w-full p-2 mb-2"
-      />
-      <pre>
-      <button
-        onClick={handleCreatePost}
-        className="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded mb-4"
-      >Create Post
-      </button>
-      </pre>
 
-      <br/>
+      {showForm && (
+        <div>
+          <h4>Title:</h4>
+          <input
+            type="text"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            placeholder="Enter title here"
+            className="block w-full p-2 mb-2 border rounded"
+          />
+          <h4>Content:</h4>
+          <textarea
+            value={content}
+            onChange={(e) => setContent(e.target.value)}
+            placeholder="Enter content here"
+            className="block w-full p-2 mb-2 border rounded"
+          />
+          <h4>File Type :</h4>
+          <select
+            value={fileExtension}
+            onChange={(e) => setFileExtension(e.target.value)}
+            className="block w-full p-2 mb-2 border rounded"
+          >
+            <option value="c">C</option>
+            <option value="cpp">C++</option>
+            <option value="java">Java</option>
+            <option value="py">Python</option>
+          </select>
+          <input
+            type="file"
+            onChange={(e) => setFile(e.target.files[0])}
+            className="block w-full p-2 mb-2"
+          />
+          <button
+            onClick={handleCreatePost}
+            className="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded mb-4"
+          >
+            Submit
+          </button>
+        </div>
+      )}
 
       <h2 className="text-xl font-bold mb-4">
         {showingUserPosts ? "My Posts" : "Posts by Others"}
@@ -133,7 +151,6 @@ function PostList({ token }) {
         posts.map((post) => (
           <div key={post._id} className="p-4 mb-4 bg-white rounded shadow">
             <h3 className="text-lg font-bold">{post.title}</h3>
-
             {post.codeSnippetUrl && (
               <>
                 <button
@@ -142,7 +159,7 @@ function PostList({ token }) {
                   }
                   className="text-blue-500 mb-2"
                 >
-                  Load Code Snippet
+                  {codeSnippets[post._id] ? "Hide Code Snippet" : "Load Code Snippet"}
                 </button>
                 {codeSnippets[post._id] && (
                   <pre className="bg-gray-100 p-2 rounded">
@@ -165,4 +182,14 @@ PostList.propTypes = {
 };
 
 export default PostList;
+
+
+
+
+
+
+
+
+
+
 

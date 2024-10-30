@@ -10,7 +10,7 @@ const express=require('express')
 const router = express.Router()
 
 ///create post
-router.post('/post',authMiddleware,upload.single('codeSnippet'),async(req,res)=>{
+router.post('/',authMiddleware,upload.single('codeSnippet'),async(req,res)=>{
   const { title, content,fileExtension } = req.body;
   let codeSnippetUrl = null;
 
@@ -46,7 +46,7 @@ router.post('/post',authMiddleware,upload.single('codeSnippet'),async(req,res)=>
 
 //get post of others
 
-router.get('/post',authMiddleware, async(req,res)=>{
+router.get('/',authMiddleware, async(req,res)=>{
   const posts = await Post.find({ email: { $ne: req.user.email } });
   res.json(posts);
 })
@@ -59,7 +59,7 @@ router.get('/mypost',authMiddleware, async(req,res)=>{
 })
 
 //get single user post
-router.get('/post/:id', authMiddleware, async (req, res) => {
+router.get('/:id', authMiddleware, async (req, res) => {
   try {
       const post = await Post.findById(req.params.id);
       if (post) {
